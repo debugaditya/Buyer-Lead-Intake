@@ -29,7 +29,7 @@ interface BuyerProfileData {
 
 const BuyerProfileSchema = z.object({
     fullName: z.coerce.string().min(2, { message: 'Full name must be at least 2 characters.' }).optional().nullable(),
-    email: z.coerce.string().email({ message: 'Invalid email format.' }).optional().nullable().or(z.literal('')),
+    email: z.string().email({ message: 'Invalid email format.' }).or(z.literal('')).optional().nullable(),
     phone: z.coerce.string().min(10, { message: "Invalid phone number. The number must be between 10 and 15 characters long." }).max(15, { message: "Invalid phone number. The number must be between 10 and 15 characters long." }),
     budgetMin: z.coerce.number().optional().nullable(),
     budgetMax: z.coerce.number().optional().nullable(),
