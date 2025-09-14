@@ -76,74 +76,73 @@ export default function BuyerProfilePage({ params }: BuyerProfilePageProps) {
     const [history, setHistory] = useState<any[]>([]);
 
     const fetchBuyer = useCallback(async (id: string) => {
-        setIsLoading(true);
-        setError('');
-        try {
-            const res = await fetch(`/api/edit`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id }),
-            });
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.message || 'Failed to fetch buyer details.');
-            }
-            const data = await res.json();
-            const profileData: BuyerProfileData = data.buyer || data;
+        setIsLoading(true);
+        setError('');
+        try {
+            const res = await fetch(`/api/edit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id }),
+            });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Failed to fetch buyer details.');
+            }
+            const data = await res.json();
+            const profileData: BuyerProfileData = data.buyer || data;
 
-            // --- TAGS FIX ---
-            if (profileData.tags) {
-                if (typeof profileData.tags === 'string') {
-                    try {
-                        let parsed = JSON.parse(profileData.tags);
-                        if (Array.isArray(parsed) && parsed.every(Array.isArray)) parsed = parsed.flat();
-                        profileData.tags = parsed.map(String).filter(Boolean);
-                    } catch {
-                        profileData.tags = profileData.tags.split(',').map(t => t.trim()).filter(Boolean);
-                    }
-                } else if (Array.isArray(profileData.tags)) {
-                    profileData.tags = profileData.tags.flat().map(String).filter(Boolean);
-                } else {
-                    profileData.tags = [];
-                }
-            } else {
-                profileData.tags = [];
-            }
+            if (profileData.tags) {
+                if (typeof profileData.tags === 'string') {
+                    const tagsString = profileData.tags;
+                    try {
+                        let parsed = JSON.parse(tagsString);
+                        if (Array.isArray(parsed) && parsed.every(Array.isArray)) parsed = parsed.flat();
+                        profileData.tags = parsed.map(String).filter(Boolean);
+                    } catch {
+                        profileData.tags = tagsString.split(',').map(t => t.trim()).filter(Boolean);
+                    }
+                } else if (Array.isArray(profileData.tags)) {
+                    profileData.tags = profileData.tags.flat().map(String).filter(Boolean);
+                } else {
+                    profileData.tags = [];
+                }
+            } else {
+                profileData.tags = [];
+            }
 
-            // --- HISTORY PARSING ---
-            const rawHistory = data.history || [];
-            const parsedHistory = rawHistory.map((h: any) => {
-                let diffData: any[] = [];
+            const rawHistory = data.history || [];
+            const parsedHistory = rawHistory.map((h: any) => {
+                let diffData: any[] = [];
 
-                if (typeof h.diff === 'string') {
-                    try {
-                        const parsed = JSON.parse(h.diff);
-                        if (Array.isArray(parsed)) {
-                            diffData = parsed;
-                        }
-                    } catch {
-                        diffData = [];
-                    }
-                } else if (Array.isArray(h.diff)) {
-                    diffData = h.diff;
-                }
+                if (typeof h.diff === 'string') {
+                    try {
+                        const parsed = JSON.parse(h.diff);
+                        if (Array.isArray(parsed)) {
+                            diffData = parsed;
+                        }
+                    } catch {
+                        diffData = [];
+                    }
+                } else if (Array.isArray(h.diff)) {
+                    diffData = h.diff;
+                }
 
-                return { ...h, diff: diffData };
-            });
+                return { ...h, diff: diffData };
+            });
 
-            const sortedHistory = parsedHistory
-                .sort((a: any, b: any) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime())
-                .slice(0, 5);
+            const sortedHistory = parsedHistory
+                .sort((a: any, b: any) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime())
+                .slice(0, 5);
 
-            setHistory(sortedHistory);
-            setFormData(profileData);
+            setHistory(sortedHistory);
+            setFormData(profileData);
 
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         if (buyerId) fetchBuyer(buyerId);
