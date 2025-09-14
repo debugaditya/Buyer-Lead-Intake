@@ -1,7 +1,7 @@
 'use client';
 
-import Searchbar from '@/components/Searchbar';
-import type { SearchResult } from '@/components/Searchbar';
+import Searchbar from '@/components/searchbar';
+import type { SearchResult } from '@/components/searchbar';
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
