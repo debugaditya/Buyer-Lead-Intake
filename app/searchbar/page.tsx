@@ -2,19 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 
-interface SearchResult {
-  id: string;
-  fullName: string;
-  email: string | null;
-  phone: string;
-  city: string;
-  propertyType: string;
-  status: string;
+export interface SearchResult {
+    id: string;
+    fullName: string;
+    email: string | null;
+    phone: string;
+    city: string;
+    propertyType: string;
+    status: string;
 }
 
 interface SearchbarProps {
-  onSearchResults: (results: SearchResult[]) => void;
-  onSearchActive: (isActive: boolean) => void;
+    onSearchResults: (results: SearchResult[]) => void;
+    onSearchActive: (isActive: boolean) => void;
 }
 
 export default function Searchbar({ onSearchResults, onSearchActive }: SearchbarProps) {
@@ -33,8 +33,8 @@ export default function Searchbar({ onSearchResults, onSearchActive }: Searchbar
             try {
                 const res = await fetch('/api/search', {
                     method: 'POST',
-                    headers: { 
-                      'Content-Type': 'application/json',
+                    headers: {
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ query: searchQuery }),
                 });
@@ -57,16 +57,15 @@ export default function Searchbar({ onSearchResults, onSearchActive }: Searchbar
     }, [searchQuery, onSearchResults, onSearchActive]);
 
     return (
-      <div className="search-section">
-          <input
-              className="search-input"
-              type="text"
-              placeholder="Search by name, email, or phone..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {isLoading && <span className="search-status-message">Searching...</span>}
-      </div>
+        <div className="search-section">
+            <input
+                className="search-input"
+                type="text"
+                placeholder="Search by name, email, or phone..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {isLoading && <span className="search-status-message">Searching...</span>}
+        </div>
     );
 }
-
